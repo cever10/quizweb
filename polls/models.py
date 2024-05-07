@@ -11,3 +11,10 @@ class RandomQuiz(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     answer = models.CharField(max_length=100)
+
+class SubjectiveQuiz(models.Model) :
+    question = models.CharField(max_length= 255)
+    answer = models.TextField()
+
+    def __str__(self) :
+        return self.question

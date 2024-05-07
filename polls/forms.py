@@ -3,6 +3,7 @@
 from django import forms
 from .models import RandomQuiz
 from .models import Quiz
+from .models import SubjectiveQuiz
 
 class RandomQuizForm(forms.ModelForm):
     # 사용자가 답변을 입력할 수 있는 필드를 추가함.
@@ -16,4 +17,9 @@ class RandomQuizForm(forms.ModelForm):
 class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
+        fields = ['question', 'answer']
+
+class SubjectiveQuizForm(froms.ModelFrom) :
+    class Meta :
+        model = SubjectiveQuiz
         fields = ['question', 'answer']

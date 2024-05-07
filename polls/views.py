@@ -4,6 +4,8 @@ from .models import RandomQuiz
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Quiz
 from .forms import QuizForm
+from .models import SubjectiveQuiz
+from .forms import SubjectiveQuizForm
 
 
 
@@ -75,3 +77,15 @@ def subjective_quiz(request):
 
 def timed_quiz(request):
     return HttpResponse("제한 시간 페이지")
+
+def subjective_quiz(request) :
+    if request.method == 'POST':
+        form = SubjectiveQuizForm(request.POST)
+        if form.is_valid() :
+            form.save()
+            return redirect('subjective_quiz')
+    else :
+        form = SubjectiveQuizForm()
+    quizzes = SubjectiveQuiz.objects.all()
+    return render(request, 'polls/subjective_quiz.html', {'form' : form, 'quizzes' : quizzes})
+
