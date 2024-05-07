@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Quiz Deletion</title>
+</head>
+<body>
+    <h1>Confirm Quiz Deletion</h1>
+    <p>Are you sure you want to delete the quiz "{{ quiz.question }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm</button>
+    </form>
+</body>
+</html>

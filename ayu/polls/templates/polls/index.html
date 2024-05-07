@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퀴즈앱</title>
+</head>
+<body>
+    <h1>퀴즈 앱</h1>
+    <p>원하는 퀴즈의 종류 골르세요</p>
+    <a href="{% url 'random_quiz' %}" class="btn">랜덤 퀴즈</a>
+    <a href="{% url 'subjective_quiz' %}" class="btn">주관식 퀴즈</a>
+    <a href="{% url 'timed_quiz' %}" class="btn"> 제한시간 퀴즈</a>
+     <!-- 버튼 추가 -->
+    <a href="{% url 'quiz_create' %}">퀴즈 만들기(random Quiz)</a>
+    
+    </body>
+</html>

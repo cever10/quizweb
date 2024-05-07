@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>퀴즈 생성</title>
+</head>
+<body>
+    <h1>추가할 퀴즈를 입력해주세요</h1>
+    <form method="post" action="{% url 'quiz_create' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">저장하기</button>
+    </form>
+</body>
+</html>

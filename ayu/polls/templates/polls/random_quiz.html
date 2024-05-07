@@ -1,0 +1,32 @@
+
+<!-- polls/templates/polls/random_quiz.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랜덤 퀴즈 페이지</title>
+</head>
+<body>
+    <h1>랜덤 퀴즈</h1>
+    <div class="quiz">
+        <h2>{{ random_quiz.title }}</h2>
+        <p>{{ random_quiz.content }}</p>
+    </div>
+    
+    <form id="quiz-form" method="post" action="{% url 'check_answer' %}">
+        {% csrf_token %}
+        <input type="hidden" name="quiz_id" value="{{ random_quiz.id }}"> <!-- 퀴즈 ID를 숨은 필드로 전달 -->
+        <input type="text" name="user_answer" placeholder="정답을 입력하세요">
+        <button type="submit">보내기</button>
+    </form>
+
+    <!-- 정답을 보여줄 영역 -->
+    <div id="answer-result">
+        {% if answer_result %}
+            <p>{{ answer_result }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
