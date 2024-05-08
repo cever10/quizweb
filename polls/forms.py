@@ -19,7 +19,7 @@ class QuizForm(forms.ModelForm):
         model = Quiz
         fields = ['question', 'answer']
 
-class SubjectiveQuizForm(froms.ModelFrom) :
+class SubjectiveQuizForm(forms.ModelForm) :
     class Meta :
         model = SubjectiveQuiz
         fields = ['question', 'answer']
