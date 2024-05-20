@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>퀴즈 웹</title>
+    </head>
+
+    <body>
+        <h1>퀴즈 웹 서비스</h1>
+
+        <hr>
+
+        {% if user.is_authenticated == False %}
+            <p></p>
+            <p>회원 관리</p>
+            <a href="{% url 'uLoginPage' %}">
+                <button>로그인</button>
+            </a>
+            <a href="{% url 'uRegisterPage' %}">
+                <button>등록</button>
+            </a>
+        {% else %}
+            <p></p>
+            <p>회원 관리</p>
+            <a href="{% url 'uLogout' %}">
+                <button>로그아웃</button>
+            </a>
+        {% endif %}
+        
+        {% if user.is_authenticated == True %}
+        <p></p>
+        <p>퀴즈 생성</p>
+        <a href="{% url 'quiz_create' %}">
+            <button>퀴즈 만들기(랜덤)</button>
+        </a>
+        <a href="{% url 'createSPage' %}">
+            <button>퀴즈 만들기(주관식)</button>
+        </a>
+        <a href="{% url 'createTPage' %}">
+            <button>퀴즈 만들기(제한 시간)</button>
+        </a>
+
+        <p></p>
+        <p>퀴즈 리스트</p>
+        <a href="{% url 'listRPage' %}">
+            <button>퀴즈 목록(랜덤)</button>
+        </a>
+        <a href="{% url 'listSPage' %}">
+            <button>퀴즈 목록(주관식)</button>
+        </a>
+        <a href="{% url 'listTPage' %}">
+            <button>퀴즈 목록(제한 시간)</button>
+        </a>
+        {% endif %}
+
+        <p></p>
+        <p>플레이할 퀴즈 고르기</p>
+        <a href="{% url 'random_quiz' %}">
+            <button>랜덤 퀴즈</button>
+        </a>
+        <a href="{% url 'subjective_quiz' %}">
+            <button>주관식 퀴즈</button>
+        </a>
+        <a href="{% url 'TLPage' %}">
+            <button>제한시간 퀴즈</button>
+        </a>
+    </body>
+</html>

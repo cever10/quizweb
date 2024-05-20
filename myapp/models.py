@@ -1,0 +1,29 @@
+from django.db import models
+
+# Create your models here.
+class TLQuiz(models.Model):
+    userID = models.IntegerField()
+    question = models.TextField()
+    answer = models.CharField(max_length=100)
+    timeLimit = models.IntegerField(default=10)  # Default time limit in seconds
+
+#----------------------------------------------------------------
+
+class Quiz(models.Model):
+    title = models.CharField(max_length=100)
+    category = models.CharField(max_length=50)
+    question = models.TextField()
+    answer = models.CharField(max_length=100)
+    time_limit = models.IntegerField(default=60)  # Default time limit in seconds
+    
+class RandomQuiz(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    answer = models.CharField(max_length=100)
+
+class SubjectiveQuiz(models.Model) :
+    question = models.CharField(max_length= 255)
+    answer = models.TextField()
+
+    def __str__(self) :
+        return self.question

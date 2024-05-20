@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>퀴즈 웹</title>
+    </head>
+
+    <body>
+        <h1>제한 시간 퀴즈</h1>
+        <h2>{{ TLQuiz.question }}</h2>
+        
+        {% if end == False %}
+        <form id="Form" method="post" action="{% url 'checkAnswer' %}">
+            {% csrf_token %}
+            <input type="hidden" name="quizID" value="{{ TLQuiz.id }}">
+            <input type="text" name="userAnswer" placeholder="정답을 입력하세요">
+            <button type="submit">제출</button>
+        </form>
+        {% endif %}
+
+        <!-- 정답을 보여줄 영역 -->
+        {% if answerResult %}
+            <p>{{ answerResult }}</p>
+        {% endif %}
+
+        <!-- 제한시간 후 자동으로 폼 제출 -->
+        <script>
+            var timeLimit = parseInt("{{ TLQuiz.timeLimit }}");
+            var end = "{{end}}";
+
+            function timer()
+            {
+                setTimeout(
+                    function()
+                    {
+                        document.getElementById("Form").submit();
+                    },
+                    timeLimit * 1000);
+            }
+            
+            if (end == "False")
+            {
+                document.addEventListener("DOMContentLoaded", timer);
+            }
+        </script>
+    </body>
+</html>

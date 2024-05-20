@@ -1,0 +1,63 @@
+<!-- polls/templates/polls/random_quiz.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랜덤 퀴즈 페이지</title>
+</head>
+<body>
+    <h1>랜덤 퀴즈</h1>
+    <div class="quiz">
+        <h2>{{ random_quiz.title }}</h2>
+        <p>{{ random_quiz.content }}</p>
+    </div>
+    
+    <form id="quiz-form" method="post" action="{% url 'check_answer' %}">
+        {% csrf_token %}
+        <input type="hidden" name="quiz_id" value="{{ random_quiz.id }}"> <!-- 퀴즈 ID를 숨은 필드로 전달 -->
+        <input type="text" name="user_answer" placeholder="정답을 입력하세요">
+        <button type="submit">보내기</button>
+    </form>
+
+    <!-- 정답을 보여줄 영역 -->
+    <div id="answer-result">
+        {% if answer_result %}
+            <p>{{ answer_result }}</p>
+        {% endif %}
+    </div>
+    
+</body>
+ <!-- 다음 랜덤 퀴즈를 보여주는 버튼 -->
+ <button id="next-question" onclick="getNextRandomQuiz()">다 음</button>
+
+
+ <script>
+     // 다음 랜덤 퀴즈를 가져와서 화면에 업데이트하는 함수
+     function getNextRandomQuiz() {
+         // AJAX를 사용하여 서버에 요청을 보냅니다.
+         fetch('get_next_random_quiz/')  // 요청 URL을 적절히 수정해야 합니다.
+             .then(response => response.json())
+             .then(data => {
+                 // 서버로부터 받은 다음 랜덤 퀴즈 정보를 화면에 업데이트합니다.
+                 document.querySelector('.quiz h2').innerText = data.title;
+                 document.querySelector('.quiz p').innerText = data.content;
+                 document.querySelector('input[name="quiz_id"]').value = data.id;
+                 document.querySelector('#answer-result').innerHTML = '';  // 정답 결과를 초기화합니다.
+             })
+             .catch(error => console.error('Error:', error));
+     }
+
+     // 버튼 클릭 이벤트 핸들러
+     document.getElementById('next-question').addEventListener('click', function() {
+         // 다음 랜덤 퀴즈를 가져와서 화면에 업데이트합니다.
+         getNextRandomQuiz();
+     });
+
+     // 페이지 로드시 초기 랜덤 퀴즈를 가져옵니다.
+     window.addEventListener('load', function() {
+         getNextRandomQuiz();
+     });
+ </script>
+</html>
