@@ -1,3 +1,4 @@
+import time
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
@@ -149,7 +150,7 @@ def TLPage(request):
     TLQuiz = models.TLQuiz.objects.order_by('?').first()
     
     if request.user.is_authenticated == True:
-        request.session[f'quizStartTime{request.user.id}'] = timezone.now().isoformat()
+        request.session[f'quizStartTime{request.user.id}'] = time.time()
 
     return render(request, 'TL.html', {'TLQuiz': TLQuiz, 'end': False})
 
@@ -167,18 +168,16 @@ def checkAnswer(request):
 
         startTimeStr = request.session.get(f'quizStartTime{request.user.id}')
         if startTimeStr:
-            startTime = timezone.datetime.fromisoformat(startTimeStr)
-            currentTime = timezone.now()
-            checkedTime = (currentTime - startTime).total_seconds()
+            currentTime = time.time()
 
-        if checkedTime <= float(TLQuiz.timeLimit) + 0.1:
-            # 사용자의 답변과 정답을 비교합니다.
-            if userAnswer == TLQuiz.answer:
-                answerResult = "정답입니다!"
+            if currentTime - startTimeStr <= TLQuiz.timeLimit:
+                # 사용자의 답변과 정답을 비교합니다.
+                if userAnswer == TLQuiz.answer:
+                    answerResult = "정답입니다!"
+                else:
+                    answerResult = f"틀렸습니다. 정답은 {TLQuiz.answer}입니다."
             else:
-                answerResult = f"틀렸습니다. 정답은 {TLQuiz.answer}입니다."
-        else:
-            answerResult = "비정상 제출 시간입니다"
+                answerResult = "비정상 제출 시간입니다"
 
     return render(request, 'TL.html', {'TLQuiz': TLQuiz, 'answerResult': answerResult, 'end': True})
 
