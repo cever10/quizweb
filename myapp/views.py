@@ -6,20 +6,17 @@ from django.utils import timezone
 from myapp import forms, models
 
 
-from .models import RandomQuiz
-from .models import Quiz
-from .forms import QuizForm
-from .models import SubjectiveQuiz
-from .forms import SubjectiveQuizForm
-from django.http import JsonResponse
-from django.http import HttpResponse
+from .models import RandomQuiz, UserQuiz, Quiz, SubjectiveQuiz
+from .forms import QuizForm,SubjectiveQuizForm
+from django.http import JsonResponse, HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
+import random
 
 # Create your views here.
 
 def mainPage(request):
     return render(request, 'main.html')
-
-
 
 def uRegisterPage(request):
     if request.method == 'POST':
@@ -84,7 +81,8 @@ def createTPage(request):
 
 
 def listRPage(request):
-    return render(request, 'listR.html')
+    quizzes = Quiz.objects.all()
+    return render(request, 'listR.html', {'quizzes': quizzes})
 
 
 def listSPage(request):
@@ -194,37 +192,71 @@ def random_quiz(request):
     context = {'random_quiz': random_quiz}
     return render(request, 'polls/random_quiz.html', context)
 
+@login_required
 def check_answer(request):
     if request.method == 'POST':
         quiz_id = request.POST.get('quiz_id')
         user_answer = request.POST.get('user_answer')
+        user = request.user
+        
+        random_quiz = get_object_or_404(RandomQuiz, pk=quiz_id)
 
-        # 퀴즈 ID를 이용하여 퀴즈 객체를 가져옵니다.
-        random_quiz = RandomQuiz.objects.get(pk=quiz_id)
-
-        # 사용자의 답변과 정답을 비교합니다.
+       
         if user_answer == random_quiz.answer:
             answer_result = "정답입니다!"
+            answered_correctly = True
         else:
             answer_result = f"틀렸습니다. 정답은 {random_quiz.answer}입니다."
+            answered_correctly = False
+            
+             # UserQuiz에 저장합니다.
+        UserQuiz.objects.create(user=user, quiz=random_quiz, answered_correctly=answered_correctly)
 
-        return render(request, 'polls/random_quiz.html', {'random_quiz': random_quiz, 'answer_result': answer_result})
-    
+        context = {
+            'random_quiz': random_quiz,
+            'answer_result': answer_result,
+        }
+
+        html = render_to_string('polls/answer_result.html', context)
+        return JsonResponse({'html': html})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 def get_next_random_quiz(request):
-    random_quiz = RandomQuiz.objects.order_by('?').first()
-    
-    # 선택된 퀴즈의 정보를 JSON 형식으로 반환
-    data = {
-        
-        'id': random_quiz.id,
-        'title': random_quiz.title,
-        'content': random_quiz.content,
-    }
-    
+    user = request.user
+
+    # 사용자가 푼 문제의 ID를 가져옵니다.
+    user_quizzes = UserQuiz.objects.filter(user=user).values_list('quiz_id', flat=True)
+
+    # 사용자가 풀지 않은 문제를 가져옵니다.
+    remaining_quizzes = RandomQuiz.objects.exclude(id__in=user_quizzes)
+
+    if remaining_quizzes.exists():
+        random_quiz = random.choice(remaining_quizzes)
+        data = {
+            'id': random_quiz.id,
+            'title': random_quiz.title,
+            'content': random_quiz.content,
+        }
+    else:
+        data ={}
+
     return JsonResponse(data)
 
+@login_required
 def random_quiz_view(request):
-    random_quiz = RandomQuiz.objects.order_by('?').first()  # 랜덤 퀴즈 선택
+    user = request.user
+
+    # 사용자가 푼 문제의 ID를 가져옵니다.
+    user_quizzes = UserQuiz.objects.filter(user=user).values_list('quiz_id', flat=True)
+
+    # 사용자가 풀지 않은 문제를 가져옵니다.
+    remaining_quizzes = RandomQuiz.objects.exclude(id__in=user_quizzes)
+
+    if remaining_quizzes.exists():
+        random_quiz = random.choice(remaining_quizzes)
+    else:
+        random_quiz = None
+
     context = {'random_quiz': random_quiz}
     return render(request, 'polls/random_quiz.html', context)
 
@@ -237,10 +269,13 @@ def quiz_create(request):
         form = QuizForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('index')  # index 페이지로 이동
+            return redirect('listRPage')  # index 페이지로 이동
+        else:
+            return render(request, 'polls/quiz_form.html', {'form': form})  # 폼이 유효하지 않은 경우
     else:
         form = QuizForm()
-    return render(request, 'polls/quiz_form.html', {'form': form})
+        return render(request, 'polls/quiz_form.html', {'form': form})  # GET 요청의 경우
+
 
 def quiz_update(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
@@ -260,9 +295,6 @@ def quiz_delete(request, pk):
         return redirect('index')  # index 페이지로 이동
     return render(request, 'polls/quiz_confirm_delete.html', {'quiz': quiz})
 
-
-#def subjective_quiz(request):
-#    return HttpResponse("주관식 퀴즈 페이지")
 
 def timed_quiz(request):
     return HttpResponse("제한 시간 페이지")

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class TLQuiz(models.Model):
@@ -20,6 +21,14 @@ class RandomQuiz(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     answer = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.title
+
+class UserQuiz(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(RandomQuiz, on_delete=models.CASCADE)
+    answered_correctly = models.BooleanField(default=False)
 
 class SubjectiveQuiz(models.Model) :
     question = models.CharField(max_length= 255)

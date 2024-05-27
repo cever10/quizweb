@@ -4,7 +4,6 @@ from django import forms # type: ignore
 from myapp import models
 
 from .models import RandomQuiz
-from .models import Quiz
 from .models import SubjectiveQuiz
 
 
@@ -33,8 +32,8 @@ class RandomQuizForm(forms.ModelForm):
         
 class QuizForm(forms.ModelForm):
     class Meta:
-        model = Quiz
-        fields = ['question', 'answer']
+        model = RandomQuiz
+        fields = ['title', 'content', 'answer']
 
 class SubjectiveQuizForm(forms.ModelForm) :
     class Meta :
