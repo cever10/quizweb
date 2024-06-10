@@ -222,7 +222,7 @@ def check_answer(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def get_next_random_quiz(request):
-    user = request.user
+    user = request.user# 로그인 한 회원의 정보를 비교합니다.
 
     # 사용자가 푼 문제의 ID를 가져옵니다.
     user_quizzes = UserQuiz.objects.filter(user=user).values_list('quiz_id', flat=True)
@@ -242,23 +242,6 @@ def get_next_random_quiz(request):
 
     return JsonResponse(data)
 
-@login_required
-def random_quiz_view(request):
-    user = request.user
-
-    # 사용자가 푼 문제의 ID를 가져옵니다.
-    user_quizzes = UserQuiz.objects.filter(user=user).values_list('quiz_id', flat=True)
-
-    # 사용자가 풀지 않은 문제를 가져옵니다.
-    remaining_quizzes = RandomQuiz.objects.exclude(id__in=user_quizzes)
-
-    if remaining_quizzes.exists():
-        random_quiz = random.choice(remaining_quizzes)
-    else:
-        random_quiz = None
-
-    context = {'random_quiz': random_quiz}
-    return render(request, 'polls/random_quiz.html', context)
 
 def quiz_list(request):
     quizzes = Quiz.objects.all()

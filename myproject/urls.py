@@ -52,9 +52,11 @@ urlpatterns = [
 
     #--------------------------------------------------------------------
     path('', views.index, name='index'),
+
     path('random_quiz/', views.random_quiz, name='random_quiz'),
     path('random_quiz/get_next_random_quiz/', views.get_next_random_quiz, name='get_next_random_quiz'),
     path('check_answer/', views.check_answer, name='check_answer'),
+    
     path('subjective_quiz/', views.subjective_quiz, name='subjective_quiz'),
     path('timed_quiz/', views.timed_quiz, name='timed_quiz'),
     path('quiz/', views.quiz_list, name='quiz_list'),
